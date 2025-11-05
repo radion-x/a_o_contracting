@@ -319,6 +319,11 @@
     .testimonials-mini-grid {
         grid-template-columns: 1fr;
     }
+    
+    /* Form responsive */
+    .form-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* ========================================
