@@ -140,31 +140,87 @@ class FormValidator {
         }
     }
     
-    submitForm() {
+    async submitForm() {
         const formData = new FormData(this.form);
+        const data = Object.fromEntries(formData);
         
-        // Send to server or process data
-        console.log('Form submitted successfully', Object.fromEntries(formData));
+        // Add form type identifier
+        if (this.form.id === 'quote-form') {
+            data.formType = 'quote';
+        } else {
+            data.formType = 'contact';
+        }
         
-        // Show success message
-        const successMsg = document.createElement('div');
-        successMsg.className = 'success-message';
-        successMsg.textContent = 'Thank you! We will contact you soon.';
-        successMsg.style.cssText = `
-            background-color: #27ae60;
+        // Show loading state
+        const submitBtn = this.form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        
+        try {
+            // Send to PHP backend
+            const response = await fetch('send-email.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                // Show success message
+                this.showMessage(result.message || 'Thank you! We will contact you soon.', 'success');
+                
+                // Reset form
+                this.form.reset();
+            } else {
+                // Show error message
+                this.showMessage(result.message || 'Something went wrong. Please try again or call us directly.', 'error');
+            }
+        } catch (error) {
+            console.error('Form submission error:', error);
+            this.showMessage('Network error. Please check your connection and try again.', 'error');
+        } finally {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    }
+    
+    showMessage(text, type) {
+        // Remove any existing message
+        const existingMsg = this.form.parentElement.querySelector('.form-message');
+        if (existingMsg) {
+            existingMsg.remove();
+        }
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `form-message ${type}-message`;
+        messageDiv.textContent = text;
+        
+        const bgColor = type === 'success' ? '#27ae60' : '#e74c3c';
+        messageDiv.style.cssText = `
+            background-color: ${bgColor};
             color: white;
             padding: 1rem;
             border-radius: 8px;
             margin-bottom: 1rem;
             text-align: center;
+            animation: slideDown 0.3s ease-out;
         `;
-        this.form.parentElement.insertBefore(successMsg, this.form);
         
-        // Reset form
-        this.form.reset();
+        this.form.parentElement.insertBefore(messageDiv, this.form);
         
-        // Remove success message after 5 seconds
-        setTimeout(() => successMsg.remove(), 5000);
+        // Scroll to message
+        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        
+        // Remove message after 7 seconds
+        setTimeout(() => {
+            messageDiv.style.animation = 'slideUp 0.3s ease-out';
+            setTimeout(() => messageDiv.remove(), 300);
+        }, 7000);
     }
 }
 
