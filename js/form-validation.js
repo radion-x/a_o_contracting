@@ -136,7 +136,7 @@ class FormValidator {
         });
         
         if (formIsValid) {
-            this.submitForm();
+            this.submitForm(this.form);
         }
     }
     
