@@ -143,22 +143,48 @@ class FormValidator {
     async submitForm(formElement) {
         console.log('=== FORM SUBMISSION START ===');
         console.log('Form element:', formElement);
-        
+
         const formData = new FormData(formElement);
-        const data = {
-            name: formData.get('name'),
-            email: formData.get('email'),
-            phone: formData.get('phone'),
-            message: formData.get('message')
-        };
-        
-        // Add form type
-        if (formElement.id === 'quoteForm') {
+        const data = {};
+
+        // Add form type first
+        if (formElement.id === 'quote-form') {
             data.formType = 'quote';
+
+            // Collect all quote form fields
+            data.firstName = formData.get('firstName');
+            data.lastName = formData.get('lastName');
+            data.name = `${formData.get('firstName') || ''} ${formData.get('lastName') || ''}`.trim();
+            data.email = formData.get('email');
+            data.phone = formData.get('phone');
+            data.serviceType = formData.get('serviceType');
+            data.propertyType = formData.get('propertyType');
+            data.address = formData.get('address');
+            data.suburb = formData.get('suburb');
+            data.postcode = formData.get('postcode');
+            data.buildingSize = formData.get('buildingSize');
+            data.asbestos = formData.get('asbestos');
+            data.timeline = formData.get('timeline');
+            data.message = formData.get('description');
+            data.siteAccess = formData.get('siteAccess');
+            data.contactPreference = formData.get('contactPreference');
+
+            // Collect services array
+            const services = formData.getAll('services[]');
+            if (services.length > 0) {
+                data.services = services.join(', ');
+            }
         } else {
+            // Contact form
             data.formType = 'contact';
+            data.name = formData.get('name');
+            data.email = formData.get('email');
+            data.phone = formData.get('phone');
+            data.suburb = formData.get('suburb');
+            data.service = formData.get('service');
+            data.message = formData.get('message');
         }
-        
+
         console.log('Form data:', data);
         
         // Show loading state
@@ -182,7 +208,13 @@ class FormValidator {
             
             const result = await response.json();
             console.log('Response JSON:', result);
-            
+
+            if (result.debug) {
+                console.log('🔍 DEBUG INFO:');
+                console.log('  → Email sent to:', result.debug.recipient);
+                console.log('  → Mailgun Message ID:', result.debug.mailgun_id);
+            }
+
             if (result.success) {
                 this.showMessage(formElement, 'success', result.message || 'Thank you for your message! We\'ll get back to you soon.');
                 formElement.reset();

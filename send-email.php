@@ -36,7 +36,7 @@ $mailgunDomain = getenv('MAILGUN_DOMAIN') ?: '';
 $mailgunRegion = getenv('MAILGUN_REGION') ?: 'api'; // 'api' for US, 'api.eu' for EU
 
 // Recipient email (your business email)
-$toEmail = getenv('RECIPIENT_EMAIL') ?: 'info@aocontracting.com.au';
+$toEmail = getenv('RECIPIENT_EMAIL') ?: 'info@aocontract.com.au';
 
 // Validate environment variables
 if (empty($mailgunApiKey) || empty($mailgunDomain)) {
@@ -82,6 +82,8 @@ $email = filter_var($data['email'], FILTER_SANITIZE_EMAIL);
 $phone = isset($data['phone']) ? filter_var($data['phone'], FILTER_SANITIZE_STRING) : '';
 $message = isset($data['message']) ? filter_var($data['message'], FILTER_SANITIZE_STRING) : '';
 $formType = isset($data['formType']) ? filter_var($data['formType'], FILTER_SANITIZE_STRING) : 'contact';
+$suburb = isset($data['suburb']) ? filter_var($data['suburb'], FILTER_SANITIZE_STRING) : '';
+$service = isset($data['service']) ? filter_var($data['service'], FILTER_SANITIZE_STRING) : '';
 
 // Validate email format
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -149,13 +151,19 @@ if ($formType === 'quote') {
 } else {
     // Contact form
     $subject = 'New Contact Form Submission from ' . $name;
-    
+
     $emailBody = "New Contact Form Submission\n\n";
     $emailBody .= "Name: $name\n";
     $emailBody .= "Email: $email\n";
-    $emailBody .= "Phone: $phone\n\n";
-    $emailBody .= "Message:\n$message\n";
-    
+    $emailBody .= "Phone: $phone\n";
+    if ($suburb) {
+        $emailBody .= "Suburb: $suburb\n";
+    }
+    if ($service) {
+        $emailBody .= "Service Required: $service\n";
+    }
+    $emailBody .= "\nMessage:\n$message\n";
+
     $htmlBody = "
     <html>
     <body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333;'>
@@ -167,8 +175,16 @@ if ($formType === 'quote') {
                 <h2 style='color: #003366; border-bottom: 2px solid #FF6600; padding-bottom: 10px;'>Contact Information</h2>
                 <p><strong>Name:</strong> $name</p>
                 <p><strong>Email:</strong> <a href='mailto:$email'>$email</a></p>
-                <p><strong>Phone:</strong> <a href='tel:$phone'>$phone</a></p>
-                
+                <p><strong>Phone:</strong> <a href='tel:$phone'>$phone</a></p>";
+
+    if ($suburb) {
+        $htmlBody .= "<p><strong>Suburb:</strong> $suburb</p>";
+    }
+    if ($service) {
+        $htmlBody .= "<p><strong>Service Required:</strong> $service</p>";
+    }
+
+    $htmlBody .= "
                 <h2 style='color: #003366; border-bottom: 2px solid #FF6600; padding-bottom: 10px; margin-top: 30px;'>Message</h2>
                 <p style='background-color: #f8f9fa; padding: 15px; border-radius: 5px;'>$message</p>
             </div>
@@ -211,14 +227,23 @@ curl_close($ch);
 
 // Check if request was successful
 if ($httpCode === 200) {
+    // Decode Mailgun response
+    $mailgunResponse = json_decode($response, true);
+
     http_response_code(200);
     echo json_encode([
         'success' => true,
-        'message' => 'Thank you for contacting us! We\'ll get back to you within 24 hours.'
+        'message' => 'Thank you for contacting us! We\'ll get back to you within 24 hours.',
+        'debug' => [
+            'recipient' => $toEmail,
+            'mailgun_id' => $mailgunResponse['id'] ?? 'N/A'
+        ]
     ]);
-    
-    // Log success
+
+    // Log detailed success information
     error_log("Email sent successfully to $toEmail from $email");
+    error_log("Mailgun Message ID: " . ($mailgunResponse['id'] ?? 'N/A'));
+    error_log("Full Mailgun Response: " . $response);
 } else {
     http_response_code(500);
     echo json_encode([
