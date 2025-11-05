@@ -158,8 +158,8 @@ class FormValidator {
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
         
         try {
-            // Send to PHP backend
-            const response = await fetch('send-email.php', {
+            // Send to PHP backend (use absolute path from root)
+            const response = await fetch('/send-email.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
