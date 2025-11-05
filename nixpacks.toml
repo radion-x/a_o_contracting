@@ -1,0 +1,5 @@
+[phases.build]
+cmds = ["echo 'Using Dockerfile'"]
+
+[start]
+cmd = "apache2-foreground"
