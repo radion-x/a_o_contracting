@@ -217,7 +217,7 @@ class FormValidator {
 
             if (result.success) {
                 this.showMessage(formElement, 'success', result.message || 'Thank you for your message! We\'ll get back to you soon.');
-                formElement.reset();
+                // Form is hidden by animation, no need to reset
             } else {
                 this.showMessage(formElement, 'error', result.message || 'Something went wrong. Please try again.');
             }
@@ -235,38 +235,202 @@ class FormValidator {
         }
     }
     
-    showMessage(text, type) {
+    showMessage(formElement, type, text) {
         // Remove any existing message
-        const existingMsg = this.form.parentElement.querySelector('.form-message');
+        const existingMsg = formElement.parentElement.querySelector('.form-message');
         if (existingMsg) {
             existingMsg.remove();
         }
-        
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `form-message ${type}-message`;
-        messageDiv.textContent = text;
-        
-        const bgColor = type === 'success' ? '#27ae60' : '#e74c3c';
-        messageDiv.style.cssText = `
-            background-color: ${bgColor};
-            color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            text-align: center;
-            animation: slideDown 0.3s ease-out;
-        `;
-        
-        this.form.parentElement.insertBefore(messageDiv, this.form);
-        
-        // Scroll to message
-        messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        
-        // Remove message after 7 seconds
-        setTimeout(() => {
-            messageDiv.style.animation = 'slideUp 0.3s ease-out';
-            setTimeout(() => messageDiv.remove(), 300);
-        }, 7000);
+
+        if (type === 'success') {
+            // Hide the form with fade animation
+            formElement.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+            formElement.style.opacity = '0';
+            formElement.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+                formElement.style.display = 'none';
+
+                // Create success animation container
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'form-success-animation';
+
+                messageDiv.innerHTML = `
+                    <div class="success-card">
+                        <div class="checkmark-circle">
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark-circle-bg" cx="26" cy="26" r="25" fill="none"/>
+                                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                            </svg>
+                        </div>
+                        <h2 class="success-title">Message Sent!</h2>
+                        <p class="success-text">${text}</p>
+                    </div>
+                `;
+
+                messageDiv.style.cssText = `
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 400px;
+                    opacity: 0;
+                    animation: fadeInUp 0.6s ease-out forwards;
+                `;
+
+                formElement.parentElement.appendChild(messageDiv);
+
+                // Inject styles for animations
+                if (!document.getElementById('form-animation-styles')) {
+                    const styleSheet = document.createElement('style');
+                    styleSheet.id = 'form-animation-styles';
+                    styleSheet.textContent = `
+                        @keyframes fadeInUp {
+                            from {
+                                opacity: 0;
+                                transform: translateY(30px);
+                            }
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+
+                        @keyframes drawCircle {
+                            0% {
+                                stroke-dasharray: 0, 157;
+                            }
+                            100% {
+                                stroke-dasharray: 157, 157;
+                            }
+                        }
+
+                        @keyframes drawCheck {
+                            0% {
+                                stroke-dasharray: 0, 50;
+                            }
+                            100% {
+                                stroke-dasharray: 50, 50;
+                            }
+                        }
+
+                        @keyframes scaleIn {
+                            0% {
+                                transform: scale(0);
+                            }
+                            50% {
+                                transform: scale(1.1);
+                            }
+                            100% {
+                                transform: scale(1);
+                            }
+                        }
+
+                        .success-card {
+                            background: white;
+                            border-radius: 16px;
+                            padding: 3rem 2rem;
+                            text-align: center;
+                            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+                            max-width: 500px;
+                            width: 100%;
+                        }
+
+                        .checkmark-circle {
+                            margin: 0 auto 2rem;
+                            width: 100px;
+                            height: 100px;
+                            animation: scaleIn 0.5s ease-out 0.2s both;
+                        }
+
+                        .checkmark {
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 50%;
+                        }
+
+                        .checkmark-circle-bg {
+                            stroke: #27ae60;
+                            stroke-width: 2;
+                            stroke-dasharray: 157;
+                            stroke-dashoffset: 0;
+                            animation: drawCircle 0.6s ease-out 0.4s forwards;
+                        }
+
+                        .checkmark-check {
+                            stroke: #27ae60;
+                            stroke-width: 3;
+                            stroke-linecap: round;
+                            stroke-dasharray: 50;
+                            stroke-dashoffset: 50;
+                            animation: drawCheck 0.4s ease-out 0.8s forwards;
+                        }
+
+                        .success-title {
+                            color: #003366;
+                            font-size: 2rem;
+                            margin-bottom: 1rem;
+                            font-weight: 700;
+                        }
+
+                        .success-text {
+                            color: #666;
+                            font-size: 1.1rem;
+                            line-height: 1.6;
+                        }
+
+                        @media (max-width: 768px) {
+                            .success-card {
+                                padding: 2rem 1.5rem;
+                            }
+
+                            .checkmark-circle {
+                                width: 80px;
+                                height: 80px;
+                            }
+
+                            .success-title {
+                                font-size: 1.5rem;
+                            }
+
+                            .success-text {
+                                font-size: 1rem;
+                            }
+                        }
+                    `;
+                    document.head.appendChild(styleSheet);
+                }
+
+                // Scroll to message
+                messageDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 500);
+        } else {
+            // Error message - keep simple
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `form-message error-message`;
+            messageDiv.textContent = text;
+
+            messageDiv.style.cssText = `
+                background-color: #e74c3c;
+                color: white;
+                padding: 1rem;
+                border-radius: 8px;
+                margin-bottom: 1rem;
+                text-align: center;
+                animation: slideDown 0.3s ease-out;
+            `;
+
+            formElement.parentElement.insertBefore(messageDiv, formElement);
+
+            // Scroll to message
+            messageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Remove error message after 7 seconds
+            setTimeout(() => {
+                messageDiv.style.opacity = '0';
+                messageDiv.style.transition = 'opacity 0.3s ease-out';
+                setTimeout(() => messageDiv.remove(), 300);
+            }, 7000);
+        }
     }
 }
 
