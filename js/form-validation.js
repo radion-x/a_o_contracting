@@ -140,25 +140,35 @@ class FormValidator {
         }
     }
     
-    async submitForm() {
-        const formData = new FormData(this.form);
-        const data = Object.fromEntries(formData);
+    async submitForm(formElement) {
+        console.log('=== FORM SUBMISSION START ===');
+        console.log('Form element:', formElement);
         
-        // Add form type identifier
-        if (this.form.id === 'quote-form') {
+        const formData = new FormData(formElement);
+        const data = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            phone: formData.get('phone'),
+            message: formData.get('message')
+        };
+        
+        // Add form type
+        if (formElement.id === 'quoteForm') {
             data.formType = 'quote';
         } else {
             data.formType = 'contact';
         }
         
+        console.log('Form data:', data);
+        
         // Show loading state
-        const submitBtn = this.form.querySelector('button[type="submit"]');
-        const originalBtnText = submitBtn.innerHTML;
+        const submitBtn = formElement.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+        submitBtn.innerHTML = '<span class="spinner"></span> Sending...';
         
         try {
-            // Send to PHP backend (use absolute path from root)
+            console.log('Sending fetch request to /send-email.php...');
             const response = await fetch('/send-email.php', {
                 method: 'POST',
                 headers: {
@@ -167,25 +177,29 @@ class FormValidator {
                 body: JSON.stringify(data)
             });
             
-            const result = await response.json();
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
             
-            if (response.ok && result.success) {
-                // Show success message
-                this.showMessage(result.message || 'Thank you! We will contact you soon.', 'success');
-                
-                // Reset form
-                this.form.reset();
+            const result = await response.json();
+            console.log('Response JSON:', result);
+            
+            if (result.success) {
+                this.showMessage(formElement, 'success', result.message || 'Thank you for your message! We\'ll get back to you soon.');
+                formElement.reset();
             } else {
-                // Show error message
-                this.showMessage(result.message || 'Something went wrong. Please try again or call us directly.', 'error');
+                this.showMessage(formElement, 'error', result.message || 'Something went wrong. Please try again.');
             }
         } catch (error) {
-            console.error('Form submission error:', error);
-            this.showMessage('Network error. Please check your connection and try again.', 'error');
+            console.error('=== FETCH ERROR ===');
+            console.error('Error type:', error.name);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
+            this.showMessage(formElement, 'error', 'Network error. Please check your connection and try again.');
         } finally {
-            // Reset button state
+            // Reset button
             submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
+            submitBtn.textContent = originalText;
+            console.log('=== FORM SUBMISSION END ===');
         }
     }
     

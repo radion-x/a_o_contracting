@@ -49,16 +49,28 @@ if (empty($mailgunApiKey) || empty($mailgunDomain)) {
     exit();
 }
 
+// Log that we received a request
+error_log('=== Email form submission received ===');
+error_log('Request method: ' . $_SERVER['REQUEST_METHOD']);
+
 // Get and validate POST data
-$data = json_decode(file_get_contents('php://input'), true);
+$rawInput = file_get_contents('php://input');
+error_log('Raw input: ' . $rawInput);
+
+$data = json_decode($rawInput, true);
 
 if (!$data) {
     // Try form-encoded data
+    error_log('JSON decode failed, trying $_POST');
     $data = $_POST;
+    error_log('POST data: ' . print_r($_POST, true));
 }
+
+error_log('Parsed data: ' . print_r($data, true));
 
 // Basic validation
 if (empty($data['name']) || empty($data['email'])) {
+    error_log('Validation failed: name or email missing');
     http_response_code(400);
     echo json_encode(['success' => false, 'message' => 'Name and email are required']);
     exit();
