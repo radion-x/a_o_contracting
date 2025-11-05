@@ -217,9 +217,14 @@ class FormValidator {
 
             if (result.success) {
                 this.showMessage(formElement, 'success', result.message || 'Thank you for your message! We\'ll get back to you soon.');
-                // Form is hidden by animation, no need to reset
+                // Don't reset button - form is being hidden by animation
+                console.log('=== FORM SUBMISSION END (SUCCESS) ===');
             } else {
                 this.showMessage(formElement, 'error', result.message || 'Something went wrong. Please try again.');
+                // Reset button on error so user can try again
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+                console.log('=== FORM SUBMISSION END (ERROR) ===');
             }
         } catch (error) {
             console.error('=== FETCH ERROR ===');
@@ -227,11 +232,10 @@ class FormValidator {
             console.error('Error message:', error.message);
             console.error('Error stack:', error.stack);
             this.showMessage(formElement, 'error', 'Network error. Please check your connection and try again.');
-        } finally {
-            // Reset button
+            // Reset button on error
             submitBtn.disabled = false;
             submitBtn.textContent = originalText;
-            console.log('=== FORM SUBMISSION END ===');
+            console.log('=== FORM SUBMISSION END (CATCH) ===');
         }
     }
     
