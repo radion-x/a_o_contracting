@@ -1,0 +1,69 @@
+/* ROOT CSS VARIABLES - Define once, use everywhere */
+:root {
+    /* Color Variables - Based on A&O Logo */
+    --primary-color: #003366;      /* Deep Navy Blue */
+    --secondary-color: #FF6600;    /* Bold Orange */
+    --accent-color: #FFA500;       /* Bright Orange */
+    --success-color: #27ae60;       /* Green */
+    --warning-color: #e67e22;       /* Orange */
+    --error-color: #e74c3c;         /* Red */
+    --light-bg: #f8f9fa;            /* Off-white */
+    --dark-text: #333333;           /* Dark gray */
+    --light-text: #666666;          /* Medium gray */
+    --border-color: #ddd;           /* Light gray */
+    --white: #ffffff;
+    --black: #000000;
+    
+    /* Typography Variables */
+    --font-heading: 'Poppins', sans-serif;
+    --font-body: 'Open Sans', sans-serif;
+    --font-accent: 'Lato', sans-serif;
+    
+    /* Font Sizes */
+    --font-size-base: 16px;
+    --font-size-sm: 14px;
+    --font-size-lg: 18px;
+    --font-size-xl: 24px;
+    --font-size-xxl: 32px;
+    --font-size-h1: 48px;
+    --font-size-h2: 36px;
+    --font-size-h3: 28px;
+    --font-size-h4: 22px;
+    
+    /* Line Heights */
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.6;
+    --line-height-relaxed: 1.8;
+    
+    /* Spacing */
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+    --spacing-xxl: 48px;
+    --spacing-xxxl: 64px;
+    
+    /* Border Radius */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.25);
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease-in-out;
+    --transition-normal: 0.3s ease-in-out;
+    --transition-slow: 0.5s ease-in-out;
+    
+    /* Z-index Scale */
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-modal: 1000;
+    --z-tooltip: 1100;
+}
