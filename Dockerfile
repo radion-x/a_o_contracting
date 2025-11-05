@@ -10,6 +10,9 @@ RUN apt-get update && apt-get install -y \
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
 
+# Set ServerName to suppress Apache warning
+RUN echo "ServerName aocontract.com.au" >> /etc/apache2/apache2.conf
+
 # Copy all website files
 COPY . /var/www/html/
 
