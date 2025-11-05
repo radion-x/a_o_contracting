@@ -1,0 +1,9 @@
+.git
+.github
+.claude
+node_modules
+.DS_Store
+*.md
+README.md
+SETUP_GUIDE.md
+.gitignore
