@@ -1127,6 +1127,20 @@ p {
 }
 
 /* ========================================
+   LEGAL PAGES (Privacy, Terms, Disclaimer)
+   ======================================== */
+
+.legal-content {
+    padding: var(--spacing-xxxl) 0;
+    background-color: var(--white);
+}
+
+.legal-document {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ========================================
    SERVICE DETAIL PAGES
    ======================================== */
 
