@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="css/style.css?v=2.0">
     <link rel="stylesheet" href="css/animations.css?v=2.0">
     <link rel="stylesheet" href="css/responsive.css?v=2.0">
-    <link rel="stylesheet" href="css/chat-popup.css?v=2.1">
+    <link rel="stylesheet" href="css/chat-popup.css?v=1.0">
     
     <title>A & O Contracting - Sydney Demolition & Rubbish Removal Services</title>
 </head>
@@ -697,32 +697,20 @@
     <script src="js/chat-popup.js"></script>
     <script>
         // Initialize Chat Popup
-        // Configuration loaded from environment variables (.env locally, Coolify in production)
+        // Replace 'YOUR_OPENROUTER_API_KEY' with your actual OpenRouter API key
+        // You can also load this from a config file or environment variable
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('/api/get-chat-config.php')
-                .then(res => {
-                    if (!res.ok) throw new Error('Failed to load chat configuration');
-                    return res.json();
-                })
-                .then(config => {
-                    // Initialize chat with backend configuration
-                    // API key stays secure on the server - requests go through /api/chat.php proxy
-                    window.chatPopup = new ChatPopup('BACKEND_PROXY', {
-                        model: config.model,
-                        useStreaming: config.useStreaming,
-                        maxTokens: config.maxTokens,
-                        temperature: config.temperature,
-                        systemPrompt: config.systemPrompt,
-                    });
-
-                    console.log('✅ Chat initialized with model:', config.model);
-                    console.log('🤖 System prompt loaded');
-                    console.log('🔒 API key secured on backend');
-                })
-                .catch(err => {
-                    console.error('⚠️ Chat initialization failed:', err);
-                    console.error('Make sure .env file exists with OPENROUTER_API_KEY');
+            const apiKey = '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'; // Replace with your actual API key
+            
+            if (apiKey !== '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') {
+                // Only initialize if API key is configured
+                window.chatPopup = new ChatPopup(apiKey, {
+                    model: 'deepseek/deepseek-r1-0528-qwen3-8b:free', // Change to any available model
+                    useStreaming: true, // Enable streaming responses
                 });
+            } else {
+                console.warn('Chat popup: API key not configured. Please add your OpenRouter API key.');
+            }
         });
     </script>
 

@@ -1,0 +1,23 @@
+# Environment variables (contains secrets)
+.env
+
+# Keep the example file
+!.env.example
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
