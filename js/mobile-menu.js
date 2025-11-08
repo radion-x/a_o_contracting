@@ -25,8 +25,17 @@ class MobileMenu {
     }
     
     init() {
-        // Toggle menu
-        this.toggle.addEventListener('click', () => this.toggleMenu());
+        // Toggle menu - add both click and touchstart for mobile
+        this.toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.toggleMenu();
+        });
+        
+        // Also add touchstart for better mobile support
+        this.toggle.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            this.toggleMenu();
+        }, { passive: false });
         
         // Close menu on link click
         this.links.forEach(link => {

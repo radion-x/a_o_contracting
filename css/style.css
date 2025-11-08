@@ -317,6 +317,11 @@ p {
     flex-direction: column;
     gap: 5px;
     cursor: pointer;
+    padding: 10px;
+    position: relative;
+    z-index: 1000;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .mobile-menu-toggle span {
@@ -326,6 +331,7 @@ p {
     background-color: var(--dark-text);
     border-radius: var(--border-radius-sm);
     transition: var(--transition-normal);
+    pointer-events: none;
 }
 
 .mobile-menu-toggle.active span:nth-child(1) {
