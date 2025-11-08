@@ -416,13 +416,18 @@ class ChatPopup {
         // Escape HTML first for security
         let html = this.escapeHTML(markdown);
 
-        // Code blocks (```code```)
+        // Code blocks (```code```) - must be before inline code
         html = html.replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
 
         // Inline code (`code`)
         html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-        // Bold (**text** or __text__)
+        // Headings (must be before bold)
+        html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+        html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+        html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+        // Bold (**text** or __text__) - must be before italic
         html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
         html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
 
@@ -433,12 +438,32 @@ class ChatPopup {
         // Links [text](url)
         html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 
-        // Line breaks
-        html = html.replace(/\n/g, '<br>');
+        // Lists - convert lines starting with "- " to list items
+        const lines = html.split('<br>');
+        let inList = false;
+        let result = [];
 
-        // Lists (simple implementation)
-        html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
-        html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.match(/^- (.+)/)) {
+                if (!inList) {
+                    result.push('<ul>');
+                    inList = true;
+                }
+                result.push(line.replace(/^- (.+)/, '<li>$1</li>'));
+            } else {
+                if (inList) {
+                    result.push('</ul>');
+                    inList = false;
+                }
+                result.push(line);
+            }
+        }
+        if (inList) {
+            result.push('</ul>');
+        }
+
+        html = result.join('<br>');
 
         return html;
     }
