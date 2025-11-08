@@ -75,21 +75,9 @@
         display: flex;
     }
     
-    /* Show CTA buttons in mobile menu */
+    /* Hide CTA buttons on mobile (outside of menu) */
     .nav-cta {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-md);
-        padding: var(--spacing-lg) var(--spacing-md);
-        margin-top: var(--spacing-md);
-        border-top: 2px solid #f0f0f0;
-        width: 100%;
-    }
-    
-    .nav-cta .btn {
-        width: 100%;
-        justify-content: center;
-        text-align: center;
+        display: none;
     }
     
     /* Dropdown styling for mobile */
