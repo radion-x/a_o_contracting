@@ -23,6 +23,7 @@
     <link rel="stylesheet" href="css/style.css?v=2.0">
     <link rel="stylesheet" href="css/animations.css?v=2.0">
     <link rel="stylesheet" href="css/responsive.css?v=2.0">
+    <link rel="stylesheet" href="css/chat-popup.css?v=2.8">
     
     <title>Get a Free Quote - A & O Contracting Sydney</title>
 </head>
@@ -565,6 +566,21 @@
     <script src="js/main.js"></script>
     <script src="js/form-validation.js"></script>
     <script src="js/mobile-menu.js"></script>
+
+    <!-- CHAT POPUP SCRIPTS -->
+    <script src="js/openrouter-api.js?v=2.0"></script>
+    <script src="js/chat-popup.js?v=2.1"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/api/get-chat-config.php')
+                .then(res => res.ok ? res.json() : Promise.reject('Failed to load config'))
+                .then(config => {
+                    window.chatPopup = new ChatPopup('BACKEND_PROXY', config);
+                    console.log('✅ Chat initialized');
+                })
+                .catch(err => console.error('⚠️ Chat initialization failed:', err));
+        });
+    </script>
 
 </body>
 </html>

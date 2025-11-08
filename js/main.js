@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM Content Loaded - Initializing Application');
     
     // Initialize all features
-    initMobileMenu();
+    // Note: Mobile menu is initialized in mobile-menu.js
     initSmoothScroll();
     initBackToTop();
     initAOS();
@@ -16,55 +16,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Log to confirm initialization
     console.log('All features initialized successfully');
 });
-
-// ========================================
-// MOBILE MENU FUNCTIONALITY
-// ========================================
-
-function initMobileMenu() {
-    const mobileToggle = document.getElementById('mobile-toggle');
-    const navMenu = document.getElementById('nav-menu');
-    const navLinks = document.querySelectorAll('.nav-link');
-    
-    if (mobileToggle) {
-        // Toggle menu on hamburger click
-        mobileToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('active');
-            mobileToggle.classList.toggle('active');
-        });
-        
-        // Close menu when a link is clicked
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Don't close for dropdowns
-                if (!this.closest('.dropdown')) {
-                    navMenu.classList.remove('active');
-                    mobileToggle.classList.remove('active');
-                }
-            });
-        });
-        
-        // Handle dropdown menus on mobile
-        const dropdowns = document.querySelectorAll('.dropdown');
-        dropdowns.forEach(dropdown => {
-            const link = dropdown.querySelector('.nav-link');
-            link.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    e.preventDefault();
-                    dropdown.classList.toggle('active');
-                }
-            });
-        });
-        
-        // Close menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.navbar')) {
-                navMenu.classList.remove('active');
-                mobileToggle.classList.remove('active');
-            }
-        });
-    }
-}
 
 // ========================================
 // SMOOTH SCROLL

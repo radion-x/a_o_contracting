@@ -9,8 +9,18 @@ class MobileMenu {
         this.links = document.querySelectorAll('.nav-link');
         this.dropdowns = document.querySelectorAll('.dropdown');
         
+        console.log('Mobile Menu Debug:', {
+            toggle: this.toggle,
+            menu: this.menu,
+            linksCount: this.links.length,
+            dropdownsCount: this.dropdowns.length
+        });
+        
         if (this.toggle && this.menu) {
             this.init();
+            console.log('✅ Mobile menu initialized successfully');
+        } else {
+            console.error('❌ Mobile menu elements not found!');
         }
     }
     
@@ -46,13 +56,16 @@ class MobileMenu {
     }
     
     toggleMenu() {
+        console.log('🔄 Toggle menu clicked');
         this.menu.classList.toggle('active');
         this.toggle.classList.toggle('active');
         
         if (this.menu.classList.contains('active')) {
             document.body.style.overflow = 'hidden';
+            console.log('📱 Menu opened');
         } else {
             document.body.style.overflow = '';
+            console.log('📱 Menu closed');
         }
     }
     
@@ -77,5 +90,14 @@ class MobileMenu {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 DOM Content Loaded - Initializing Mobile Menu');
     new MobileMenu();
 });
+
+// Fallback: Also try to initialize after a short delay if DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+    console.log('⏳ Document still loading...');
+} else {
+    console.log('✅ Document already loaded, initializing immediately');
+    new MobileMenu();
+}
