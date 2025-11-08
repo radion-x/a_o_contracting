@@ -37,7 +37,9 @@
 }
 
 .chat-toggle-btn.active {
-    background: #002244;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 /* Chat Container */
