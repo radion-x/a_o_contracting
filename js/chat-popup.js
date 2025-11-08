@@ -438,30 +438,61 @@ class ChatPopup {
         // Links [text](url)
         html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
 
-        // Lists - convert lines starting with "- " to list items
+        // Convert newlines to <br> first
+        html = html.replace(/\n/g, '<br>');
+
+        // Lists - handle both numbered (1., 2., 3.) and bullet (-)
         const lines = html.split('<br>');
-        let inList = false;
+        let inOrderedList = false;
+        let inUnorderedList = false;
         let result = [];
 
         for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            if (line.match(/^- (.+)/)) {
-                if (!inList) {
+            const line = lines[i].trim();
+
+            // Numbered list (1. 2. 3. etc)
+            if (line.match(/^\d+\.\s+(.+)/)) {
+                if (!inOrderedList) {
+                    if (inUnorderedList) {
+                        result.push('</ul>');
+                        inUnorderedList = false;
+                    }
+                    result.push('<ol>');
+                    inOrderedList = true;
+                }
+                result.push(line.replace(/^\d+\.\s+(.+)/, '<li>$1</li>'));
+            }
+            // Bullet list (- )
+            else if (line.match(/^-\s+(.+)/)) {
+                if (!inUnorderedList) {
+                    if (inOrderedList) {
+                        result.push('</ol>');
+                        inOrderedList = false;
+                    }
                     result.push('<ul>');
-                    inList = true;
+                    inUnorderedList = true;
                 }
-                result.push(line.replace(/^- (.+)/, '<li>$1</li>'));
-            } else {
-                if (inList) {
+                result.push(line.replace(/^-\s+(.+)/, '<li>$1</li>'));
+            }
+            // Regular line
+            else {
+                if (inOrderedList) {
+                    result.push('</ol>');
+                    inOrderedList = false;
+                }
+                if (inUnorderedList) {
                     result.push('</ul>');
-                    inList = false;
+                    inUnorderedList = false;
                 }
-                result.push(line);
+                if (line) {
+                    result.push(line);
+                }
             }
         }
-        if (inList) {
-            result.push('</ul>');
-        }
+
+        // Close any open lists
+        if (inOrderedList) result.push('</ol>');
+        if (inUnorderedList) result.push('</ul>');
 
         html = result.join('<br>');
 
