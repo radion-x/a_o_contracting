@@ -286,8 +286,8 @@ class ChatPopup {
                         this.elements.messagesArea.appendChild(messageContainer);
                     }
 
-                    // Update message content
-                    messageContainer.querySelector('.message-content').textContent = fullResponse;
+                    // Update message content with parsed markdown
+                    messageContainer.querySelector('.message-content').innerHTML = this.parseMarkdown(fullResponse);
                     this.scrollToBottom();
                 },
                 (error) => {
@@ -405,6 +405,42 @@ class ChatPopup {
             "'": '&#039;'
         };
         return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    /**
+     * Parse markdown to HTML
+     * @param {string} markdown - Markdown text
+     * @returns {string} HTML
+     */
+    parseMarkdown(markdown) {
+        // Escape HTML first for security
+        let html = this.escapeHTML(markdown);
+
+        // Code blocks (```code```)
+        html = html.replace(/```([^`]+)```/g, '<pre><code>$1</code></pre>');
+
+        // Inline code (`code`)
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+        // Bold (**text** or __text__)
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+
+        // Italic (*text* or _text_)
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        html = html.replace(/_(.+?)_/g, '<em>$1</em>');
+
+        // Links [text](url)
+        html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+
+        // Line breaks
+        html = html.replace(/\n/g, '<br>');
+
+        // Lists (simple implementation)
+        html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+        html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+        return html;
     }
 
     /**
