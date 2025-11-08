@@ -11,6 +11,8 @@
 html {
     scroll-behavior: smooth;
     font-size: var(--font-size-base);
+    overflow-x: hidden;
+    max-width: 100%;
 }
 
 body {
@@ -19,6 +21,8 @@ body {
     line-height: var(--line-height-normal);
     background-color: var(--light-bg);
     overflow-x: hidden;
+    max-width: 100%;
+    position: relative;
 }
 
 a {
