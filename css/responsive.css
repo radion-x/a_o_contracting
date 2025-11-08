@@ -10,12 +10,14 @@
         position: relative;
     }
 
-    * {
+    /* Prevent overflow but allow chat to function normally */
+    img, video, iframe {
         max-width: 100%;
     }
 
     .container {
         padding: 0 var(--spacing-md);
+        max-width: 100%;
     }
     
     /* Logo size adjustment for mobile */
